@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>VolanteCred | Pré-cadastro de crédito pra motorista de app</title>
+<meta name="description" content="Pré-cadastro de crédito de R$ 1.000 a R$ 10.000 pra quem dirige por aplicativo. A parcela sai dos repasses do app, sem boleto.">
+<meta name="theme-color" content="#0B5D3B">
+<link rel="icon" href="assets/favicon.png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="preload" href="assets/manrope-800.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="assets/site.css">
+<meta name="robots" content="noindex">
+<meta property="og:title" content="VolanteCred | Crédito pra quem dirige por app">
+<meta property="og:description" content="Faz teu pré-cadastro de R$ 1.000 a R$ 10.000. A parcela sai dos repasses do app.">
+<meta property="og:image" content="assets/motorista.webp">
+</head>
+<body>
+
+<div class="lp">
+<header class="top"><div class="wrap">
+  <img src="assets/volantecred-logo.svg" alt="VolanteCred" width="150" height="30">
+  <button class="pill" data-quiz>Fazer pré-cadastro</button>
+</div></header>
+
+<main>
+<section class="hero"><div class="wrap">
+  <div>
+    <p class="eyebrow">Crédito pra motorista de app</p>
+    <h1>De R$ 1.000 a R$ 10.000 pra quem vive do volante</h1>
+  </div>
+  <img class="foto" src="assets/motorista.webp" srcset="assets/motorista-640.webp 640w, assets/motorista.webp 1100w" sizes="(min-width:860px) 500px, 100vw" width="1100" height="829" alt="Motorista de aplicativo dentro do carro" fetchpriority="high">
+  <div>
+    <p class="sub">Tu dirige por Uber, 99 ou inDrive? Faz teu pré-cadastro. A parcela sai dos repasses do app, sem boleto.</p>
+    <div class="card">
+      <label for="rng">De quanto tu precisa?</label>
+      <div class="valor" id="val">R$ 3.000</div>
+      <input type="range" id="rng" min="0" max="5" step="1" value="2" aria-label="Valor">
+      <div class="faixa"><span>R$ 1.000</span><span>R$ 10.000</span></div>
+      <button class="btn" data-quiz>Fazer meu pré-cadastro</button>
+    </div>
+    <p class="nota">É um pré-cadastro. A gente nunca pede dinheiro adiantado.</p>
+  </div>
+</div></section>
+
+<section class="verde"><div class="wrap">
+  <h2>Como funciona</h2>
+  <div class="trio">
+    <div class="passo"><span class="n">1</span><h3>Pré-cadastro</h3><p>Tu responde umas perguntas rápidas sobre teu trabalho nos apps. Leva uns 2 minutos.</p></div>
+    <div class="passo"><span class="n">2</span><h3>Análise</h3><p>A gente olha teu histórico como motorista e te chama no WhatsApp quando a análise abrir.</p></div>
+    <div class="passo"><span class="n">3</span><h3>Dinheiro na conta</h3><p>Se a análise passar, o dinheiro cai na tua conta e a parcela é descontada dos repasses do app.</p></div>
+  </div>
+</div></section>
+
+<section class="sec"><div class="wrap">
+  <h2>Feito pra quem dirige</h2>
+  <div class="trio">
+    <div class="vant"><h3>Sem boleto</h3><p>A parcela sai sozinha dos repasses do app. Nada de data pra lembrar.</p></div>
+    <div class="vant"><h3>Parcela que acompanha teus ganhos</h3><p>O desconto vem do que tu recebe nos apps, no ritmo do teu trabalho.</p></div>
+    <div class="vant"><h3>Análise feita pra quem dirige</h3><p>A gente olha tuas corridas, teu tempo de app e tua nota, não só o teu CPF.</p></div>
+  </div>
+</div></section>
+
+<section class="sec cinza"><div class="wrap">
+  <h2>Perguntas frequentes</h2>
+  <div class="faq">
+    <details><summary>Vocês cobram algo antes?</summary><p>Não. Nunca. A VolanteCred não pede pagamento, taxa ou depósito adiantado em nenhuma etapa. Se alguém pedir dinheiro em nosso nome, é golpe.</p></details>
+    <details><summary>Por que preciso cadastrar a conta no app?</summary><p>Porque é assim que a parcela sai sozinha. Os repasses do app caem na tua conta VolanteCred, a parcela é descontada e o resto fica disponível pra ti.</p></details>
+    <details><summary>O pré-cadastro já é o empréstimo?</summary><p>Não. O pré-cadastro te coloca na primeira turma. A liberação depende de análise de crédito.</p></details>
+    <details><summary>Como vocês vão falar comigo?</summary><p>Pelo WhatsApp que tu informar no pré-cadastro, quando a análise abrir.</p></details>
+    <details><summary>O que vocês fazem com meus dados?</summary><p>Usamos só pra pré-análise de crédito e pra falar contigo. Os detalhes estão na <a href="privacidade.html">política de privacidade</a>.</p></details>
+  </div>
+  <div class="cta2"><button class="btn" data-quiz>Fazer meu pré-cadastro</button></div>
+</div></section>
+</main>
+
+<footer><div class="wrap">
+  <img src="assets/volantecred-logo-branco.svg" alt="VolanteCred" width="140" height="28">
+  <p>Esta página é um pré-cadastro. A VolanteCred é uma empresa em fase de lançamento e ainda não está concedendo crédito. As condições dependem de análise. A operação de crédito vai ser feita com instituição autorizada pelo Banco Central.</p>
+  <p>A VolanteCred nunca pede pagamento, taxa ou depósito adiantado.</p>
+  <p><a href="privacidade.html">Política de privacidade</a></p>
+  <p>© 2026 VolanteCred</p>
+</div></footer>
+</div>
+
+<div class="quiz" id="quiz" aria-live="polite">
+  <div class="qtop">
+    <div class="qbar">
+      <button class="volta" id="volta" aria-label="Voltar">‹</button>
+      <img src="assets/volantecred-logo.svg" alt="VolanteCred" width="120" height="24">
+      <span class="cont" id="cont"></span>
+    </div>
+    <div class="prog"><i id="prog"></i></div>
+  </div>
+  <div class="qbody" id="qbody"></div>
+</div>
+
+<script src="assets/config.js"></script>
+<script src="assets/quiz.js"></script>
+</body>
+</html>
