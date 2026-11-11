@@ -49,7 +49,7 @@ if(rng){rng.addEventListener('input',function(){mexeu=true;val.textContent=brl(V
 function abrir(){
  if(rng&&mexeu&&R.valor==null)R.valor=VALORES[+rng.value];
  document.body.classList.add('q');window.scrollTo(0,0);
- if(!iniciou){iniciou=true;fb('track','InitiateCheckout');history.pushState({q:1},'')}
+ if(!iniciou){iniciou=true;fb('track','InitiateCheckout');window.vcRT&&vcRT('QuizStarted');history.pushState({q:1},'')}
  tela();
 }
 document.querySelectorAll('[data-quiz]').forEach(function(b){b.addEventListener('click',abrir)});
@@ -185,7 +185,7 @@ function enviar(cpf,hp,b,er){
  d.whatsapp='55'+R.whatsapp;
  d.apps=(R.apps||[]).map(function(x){return x==='99'?'99 app':x}).join(', ');
  for(var o in ORIG)d[o]=ORIG[o];
- var fim=function(){fb('track','Lead',{currency:'BRL',value:Number(R.valor)||0},{eventID:id});pronto()};
+ var fim=function(){fb('track','Lead',{currency:'BRL',value:Number(R.valor)||0},{eventID:id});window.vcRT&&vcRT('Lead');pronto()};
  var falha=function(){enviando=false;b.disabled=false;b.textContent='Enviar meu pré-cadastro';er.textContent='Não deu pra enviar. Confira sua internet e toque em Enviar de novo.';er.hidden=false};
  if(hp)return pronto(); // campo-isca preenchido: robô. Finge sucesso e não envia.
  if(!VC.endpoint||!VC.campo){console.warn('VolanteCred: endpoint vazio, lead não enviado');return fim()}
