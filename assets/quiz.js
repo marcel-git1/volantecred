@@ -152,6 +152,7 @@ function telaContato(){
  body.appendChild(b);
 }
 
+var ACEITE=false;
 function telaAceite(){
  var ac=el('label','aceite'),ck=el('input');ck.type='checkbox';ck.id='f_lgpd';
  var tx=el('span');tx.appendChild(document.createTextNode('Autorizo a VolanteCred a usar meus dados para pré-análise de crédito e consulta a birôs de crédito, e a falar comigo pelo WhatsApp. Li a '));
@@ -162,7 +163,7 @@ function telaAceite(){
  var b=el('button','btn','Enviar meu pré-cadastro');b.type='button';
  b.addEventListener('click',function(){
   if(enviando)return;
-  if(!ck.checked){ac.classList.add('err');er.textContent='Marque a autorização pra enviar.';er.hidden=false;return}
+  ACEITE=ck.checked;
   if(!cpfOk(CPF)||!R.whatsapp){i--;return tela()}
   enviar(CPF,HP,b,er);
  });
@@ -177,7 +178,7 @@ function limpa(v){return String(v==null?'':v).replace(/[\u00a6\r\n\t]/g,' ').sli
 function enviar(cpf,hp,b,er){
  enviando=true;b.disabled=true;b.textContent='Enviando';er.hidden=true;
  var id='vc-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,10);
- var d={lgpd:'sim',cpf:mascCpf(cpf),ua:navigator.userAgent.slice(0,200),controle:mexeu?'mexeu':'não mexeu'};
+ var d={lgpd:ACEITE?'sim':'não',cpf:mascCpf(cpf),ua:navigator.userAgent.slice(0,200),controle:mexeu?'mexeu':'não mexeu'};
  for(var k in R)d[k]=R[k];
  d.whatsapp='55'+R.whatsapp;
  d.apps=(R.apps||[]).map(function(x){return x==='99'?'99 app':x}).join(', ');
