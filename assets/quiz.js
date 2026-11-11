@@ -5,7 +5,7 @@ var VALORES=[1000,2000,3000,5000,7500,10000];
 var UFS='AC AL AP AM BA CE DF ES GO MA MT MS MG PA PB PR PE PI RJ RN RS RO RR SC SP SE TO'.split(' ');
 function brl(n){return 'R$ '+n.toLocaleString('pt-BR')}
 
-// Perguntas. Texto do Copy Chief (copy/02-quiz.md). "v" é o valor gravado na planilha (o do brief); a aba "resumo" conta por ele.
+// Perguntas. Texto em copy/02-quiz.md. "v" é o valor gravado na planilha (o do brief); a aba "resumo" conta por ele.
 var P=[
  {k:'apps',a:'Pré-cadastro VolanteCred',t:'Em quais apps você dirige?',d:'Pode marcar mais de um.',multi:1,o:['Uber','99','inDrive','iFood ou outro app de entrega','Outro'],v:['Uber','99','inDrive','iFood ou entregas','Outro']},
  {k:'tempo',t:'Há quanto tempo você dirige por aplicativo?',d:'Seu tempo de app conta na análise.',o:['Menos de 6 meses','De 6 meses a 1 ano','De 1 a 2 anos','De 2 a 5 anos','Mais de 5 anos'],v:['Menos de 6 meses','6 a 12 meses','1 a 2 anos','2 a 5 anos','Mais de 5 anos']},
