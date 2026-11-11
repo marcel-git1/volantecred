@@ -20,7 +20,7 @@ var P=[
  {k:'conta_app',t:'Você cadastraria a conta VolanteCred como conta de recebimento no app, pra parcela sair sozinha?',d:'Como funciona: os repasses do app caem na conta VolanteCred, a parcela é descontada e o restante fica com você.',o:['Sim','Sim, se a taxa for boa','Não']},
  {k:'local',a:'Quase lá.',t:'Em que cidade você roda?',d:'Pra gente saber de onde vêm os motoristas da primeira turma.',form:'local'},
  {k:'contato',a:'Última etapa.',t:'Pra onde a gente chama você?',d:'A gente fala com você pelo WhatsApp quando a análise abrir. O CPF é usado só na pré-análise de crédito.',form:'contato'},
- {k:'aceite',t:'Falta só a sua autorização',form:'aceite'}
+ {k:'aceite',t:'Podemos chamar você no WhatsApp?',form:'aceite'}
 ];
 var R={},i=0,enviando=false,iniciou=false,mexeu=false,CPF='',HP='';
 var $=function(s){return document.querySelector(s)};
@@ -155,8 +155,10 @@ function telaContato(){
 var ACEITE=false;
 function telaAceite(){
  var ac=el('label','aceite'),ck=el('input');ck.type='checkbox';ck.id='f_lgpd';
- var tx=el('span');tx.appendChild(document.createTextNode('Autorizo a VolanteCred a usar meus dados para pré-análise de crédito e consulta a birôs de crédito, e a falar comigo pelo WhatsApp. Li a '));
- var a=el('a','','Política de Privacidade');a.href='privacidade.html';a.target='_blank';a.rel='noopener';tx.appendChild(a);tx.appendChild(document.createTextNode('.'));
+ var tx=el('span');tx.textContent='Sim. Autorizo a VolanteCred a consultar birôs de crédito na pré-análise e a falar comigo pelo WhatsApp.';
+ var sem=el('p','dica','Sem essa autorização, seu pré-cadastro fica guardado, mas a gente não consegue chamar você quando a análise abrir.');
+ var pv=el('p','dica');pv.appendChild(document.createTextNode('Veja como usamos seus dados na '));
+ var a=el('a','','Política de Privacidade');a.href='privacidade.html';a.target='_blank';a.rel='noopener';pv.appendChild(a);pv.appendChild(document.createTextNode('.'));
  ac.appendChild(ck);ac.appendChild(tx);
  var er=el('p','erro');er.hidden=true;
  ck.addEventListener('change',function(){ac.classList.remove('err');er.hidden=true});
@@ -167,7 +169,7 @@ function telaAceite(){
   if(!cpfOk(CPF)||!R.whatsapp){i--;return tela()}
   enviar(CPF,HP,b,er);
  });
- body.appendChild(ac);
+ body.appendChild(ac);body.appendChild(sem);body.appendChild(pv);
  body.appendChild(el('p','dica','O pré-cadastro é grátis e não garante aprovação. A VolanteCred nunca pede pagamento antes.'));
  body.appendChild(er);body.appendChild(b);
 }
@@ -197,8 +199,13 @@ function pronto(){
  i=P.length;prog.style.width='100%';cont.textContent='';volta.hidden=true;body.innerHTML='';CPF='';
  var pn=(R.nome||'').split(' ')[0];pn=pn?pn.charAt(0).toUpperCase()+pn.slice(1):'';
  var f=el('div','fim');f.appendChild(el('div','ok','✓'));
- f.appendChild(el('h2','',(pn?'Pronto, '+pn+'!':'Pronto!')+' Seu pré-cadastro entrou na primeira turma.'));
- f.appendChild(el('p','','A gente chama você no WhatsApp quando a análise abrir. Não precisa fazer mais nada agora.'));
+ if(ACEITE){
+  f.appendChild(el('h2','',(pn?'Pronto, '+pn+'!':'Pronto!')+' Seu pré-cadastro entrou na primeira turma.'));
+  f.appendChild(el('p','','A gente chama você no WhatsApp quando a análise abrir. Não precisa fazer mais nada agora.'));
+ }else{
+  f.appendChild(el('h2','','Pronto! Seu pré-cadastro foi recebido.'));
+  f.appendChild(el('p','','Você não autorizou o contato pelo WhatsApp, então a gente não vai chamar você. Mudou de ideia? Faça o pré-cadastro de novo e marque a autorização.'));
+ }
  f.appendChild(el('p','imp','Importante: a VolanteCred nunca pede pagamento, taxa ou depósito pra liberar crédito. Se alguém pedir dinheiro em nosso nome, é golpe. Não pague.'));
  body.appendChild(f);window.scrollTo(0,0);
 }
