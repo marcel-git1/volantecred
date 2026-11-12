@@ -19,7 +19,8 @@ var P=[
  {k:'negativado',t:'Seu nome está negativado hoje?',d:'Pode responder com sinceridade. Estar negativado não impede o pré-cadastro.',o:['Sim','Não','Não sei']},
  {k:'conta_app',t:'Você cadastraria a conta VolanteCred como conta de recebimento no app, pra parcela sair sozinha?',d:'Como funciona: os repasses do app caem na conta VolanteCred, a parcela é descontada e o restante fica com você.',o:['Sim','Sim, se a taxa for boa','Não']},
  {k:'local',a:'Quase lá.',t:'Em que cidade você roda?',d:'Pra gente saber de onde vêm os motoristas da primeira turma.',form:'local'},
- {k:'contato',a:'Última etapa.',t:'Pra onde a gente chama você?',d:'A gente fala com você pelo WhatsApp quando a análise abrir. O CPF é usado só na pré-análise de crédito.',form:'contato'},
+ {k:'contato',t:'Pra onde a gente chama você?',d:'A gente fala com você pelo WhatsApp quando a análise abrir.',form:'contato'},
+ {k:'cpf',a:'Falta pouco.',t:'Qual é o seu CPF?',d:'O CPF é usado só na pré-análise de crédito. Ninguém vai pedir senha nem pagamento.',form:'cpf'},
  {k:'aceite',t:'Podemos chamar você no WhatsApp?',form:'aceite'}
 ];
 var R={},i=0,enviando=false,iniciou=false,mexeu=false,CPF='',HP='';
@@ -42,6 +43,13 @@ if(VC.pixel){
  fb('init',VC.pixel);fb('track','PageView');
 }
 
+// Microsoft Clarity (gravação e mapa de calor). Só liga com ID no config.js; visita de teste fica fora.
+// O quiz inteiro é mascarado no index.html (data-clarity-mask em #qbody): resposta, nome, WhatsApp e CPF não são gravados.
+function cl(ev){if(window.clarity)window.clarity('event',ev)}
+if(VC.clarity&&ORIG.utm_source!=='teste'){
+ (function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};t=l.createElement(r);t.async=1;t.src='https://www.clarity.ms/tag/'+i;y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y)})(window,document,'clarity','script',VC.clarity);
+}
+
 // controle de valor da página
 var rng=$('#rng'),val=$('#val');
 if(rng){rng.addEventListener('input',function(){mexeu=true;val.textContent=brl(VALORES[+rng.value])})}
@@ -49,7 +57,7 @@ if(rng){rng.addEventListener('input',function(){mexeu=true;val.textContent=brl(V
 function abrir(){
  if(rng&&mexeu&&R.valor==null)R.valor=VALORES[+rng.value];
  document.body.classList.add('q');window.scrollTo(0,0);
- if(!iniciou){iniciou=true;fb('track','InitiateCheckout');window.vcRT&&vcRT('QuizStarted');history.pushState({q:1},'')}
+ if(!iniciou){iniciou=true;fb('track','InitiateCheckout');cl('quiz_abriu');window.vcRT&&vcRT('QuizStarted');history.pushState({q:1},'')}
  tela();
 }
 document.querySelectorAll('[data-quiz]').forEach(function(b){b.addEventListener('click',abrir)});
@@ -67,6 +75,7 @@ function tela(){
  if(p.d)body.appendChild(el('p','dica',typeof p.d==='function'?p.d():p.d));
  if(p.form==='local')return telaLocal();
  if(p.form==='contato')return telaContato();
+ if(p.form==='cpf')return telaCpf();
  if(p.form==='aceite')return telaAceite();
  var ops=el('div','ops');
  p.o.forEach(function(txt,n){
@@ -90,7 +99,7 @@ function tela(){
  var er=el('p','erro','Escolha uma opção pra continuar.');er.hidden=true;
  if(p.multi){var prox=el('button','btn','Continuar');prox.type='button';prox.addEventListener('click',function(){if((R[p.k]||[]).length)avanca();else er.hidden=false});body.appendChild(er);body.appendChild(prox)}
 }
-function avanca(){fb('trackCustom','QuizEtapa',{etapa:i+1,pergunta:P[i].k});i++;window.scrollTo(0,0);tela()}
+function avanca(){fb('trackCustom','QuizEtapa',{etapa:i+1,pergunta:P[i].k});cl('passou_'+(i<9?'0':'')+(i+1)+'_'+P[i].k);i++;window.scrollTo(0,0);tela()}
 
 function campo(id,rot,attrs,erro,opc){
  var c=el('div','campo'),l=el('label');l.htmlFor=id;l.textContent=rot;
@@ -129,26 +138,35 @@ function mascTel(v){v=v.replace(/\D/g,'').slice(0,11);if(v.length<3)return v;if(
 function telaContato(){
  var nome=campo('f_nome','Nome completo',{type:'text',autocomplete:'name',maxlength:'80',placeholder:'Como está no seu documento'},'Escreva seu nome completo.');
  var zap=campo('f_zap','WhatsApp com DDD',{type:'tel',inputmode:'numeric',autocomplete:'tel-national',placeholder:'(11) 91234-5678'},'Confira o número, com DDD.');
- var mail=campo('f_mail','E-mail',{type:'email',autocomplete:'email',maxlength:'120',placeholder:'seunome@email.com'},'Confira o e-mail, ou deixe em branco.',true);
- var cpf=campo('f_cpf','CPF',{type:'text',inputmode:'numeric',autocomplete:'off',placeholder:'000.000.000-00'},'Confira o CPF. O número não bateu.');
  var hp=el('input','hp');hp.type='text';hp.name='site';hp.tabIndex=-1;hp.autocomplete='off';hp.setAttribute('aria-hidden','true');
- nome.i.value=R.nome||'';zap.i.value=R.whatsapp?mascTel(R.whatsapp):'';mail.i.value=R.email||'';cpf.i.value=CPF?mascCpf(CPF):'';
+ nome.i.value=R.nome||'';zap.i.value=R.whatsapp?mascTel(R.whatsapp):'';
  zap.i.addEventListener('input',function(){zap.i.value=mascTel(zap.i.value)});
+ var b=el('button','btn','Continuar');b.type='button';
+ b.addEventListener('click',function(){
+  var ok=true,n=nome.i.value.trim().replace(/\s+/g,' '),z=zap.i.value.replace(/\D/g,'');
+  if(n.split(' ').length<2||n.length<5){nome.c.classList.add('err');ok=false}
+  if(!/^[1-9]{2}9?\d{8}$/.test(z)){zap.c.classList.add('err');ok=false}
+  if(!ok){var f=body.querySelector('.err');if(f)f.scrollIntoView({block:'center',behavior:'smooth'});return}
+  R.nome=n;R.whatsapp=z;HP=hp.value;
+  avanca();
+ });
+ [nome,zap].forEach(function(x){body.appendChild(x.c)});
+ body.appendChild(hp);
+ body.appendChild(b);
+}
+
+function telaCpf(){
+ var cpf=campo('f_cpf','CPF',{type:'text',inputmode:'numeric',autocomplete:'off',placeholder:'000.000.000-00'},'Confira o CPF. O número não bateu.');
+ cpf.i.value=CPF?mascCpf(CPF):'';
  cpf.i.addEventListener('input',function(){cpf.i.value=mascCpf(cpf.i.value)});
  var b=el('button','btn','Continuar');b.type='button';
  b.addEventListener('click',function(){
-  var ok=true,n=nome.i.value.trim().replace(/\s+/g,' '),z=zap.i.value.replace(/\D/g,''),m=mail.i.value.trim(),c=cpf.i.value.replace(/\D/g,'');
-  if(n.split(' ').length<2||n.length<5){nome.c.classList.add('err');ok=false}
-  if(!/^[1-9]{2}9?\d{8}$/.test(z)){zap.c.classList.add('err');ok=false}
-  if(m&&!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(m)){mail.c.classList.add('err');ok=false}
-  if(!cpfOk(c)){cpf.c.classList.add('err');ok=false}
-  if(!ok){var f=body.querySelector('.err');if(f)f.scrollIntoView({block:'center',behavior:'smooth'});return}
-  R.nome=n;R.whatsapp=z;R.email=m;CPF=c;HP=hp.value; // CPF fica só na memória da página até o envio
+  var c=cpf.i.value.replace(/\D/g,'');
+  if(!cpfOk(c)){cpf.c.classList.add('err');return}
+  CPF=c; // CPF fica só na memória da página até o envio
   avanca();
  });
- [nome,zap,mail,cpf].forEach(function(x){body.appendChild(x.c)});
- body.appendChild(hp);
- body.appendChild(el('p','seg','Este pré-cadastro não pede senha nem pagamento.'));
+ body.appendChild(cpf.c);
  body.appendChild(b);
 }
 
@@ -166,7 +184,8 @@ function telaAceite(){
  b.addEventListener('click',function(){
   if(enviando)return;
   ACEITE=ck.checked;
-  if(!cpfOk(CPF)||!R.whatsapp){i--;return tela()}
+  if(!R.whatsapp){i-=2;return tela()}
+  if(!cpfOk(CPF)){i--;return tela()}
   enviar(CPF,HP,b,er);
  });
  body.appendChild(ac);body.appendChild(sem);body.appendChild(pv);
@@ -185,7 +204,7 @@ function enviar(cpf,hp,b,er){
  d.whatsapp='55'+R.whatsapp;
  d.apps=(R.apps||[]).map(function(x){return x==='99'?'99 app':x}).join(', ');
  for(var o in ORIG)d[o]=ORIG[o];
- var fim=function(){fb('track','Lead',{currency:'BRL',value:Number(R.valor)||0},{eventID:id});window.vcRT&&vcRT('Lead');pronto()};
+ var fim=function(){fb('track','Lead',{currency:'BRL',value:Number(R.valor)||0},{eventID:id});window.vcRT&&vcRT('Lead');cl('lead_enviado');pronto()};
  var falha=function(){enviando=false;b.disabled=false;b.textContent='Enviar meu pré-cadastro';er.textContent='Não deu pra enviar. Confira sua internet e toque em Enviar de novo.';er.hidden=false};
  if(hp)return pronto(); // campo-isca preenchido: robô. Finge sucesso e não envia.
  if(!VC.endpoint||!VC.campo){console.warn('VolanteCred: endpoint vazio, lead não enviado');return fim()}
